@@ -95,13 +95,56 @@ Define exponentiation, which is given by the following equations.
     n ^ 0        =  1
     n ^ (1 + m)  =  n * (n ^ m)
 
+```agda
+_^_ : ℕ → ℕ → ℕ
+n ^ zero    = 1
+n ^ (suc m) = n * (n ^ m)
+
+```
+
 Check that `3 ^ 4` is `81`.
+
+```agda
+_ : 3 ^ 4 ≡ 81
+_ = refl
+```
 
 
 #### Exercise `∸-examples` (recommended) {#monus-examples}
 
 Compute `5 ∸ 3` and `3 ∸ 5`, writing out your reasoning as a chain of equations.
 
+```agda
+_ : 5 ∸ 3 ≡ 2
+_ =
+  begin
+    5 ∸ 3
+  ≡⟨⟩
+    4 ∸ 2
+  ≡⟨⟩
+    3 ∸ 1
+  ≡⟨⟩
+    2 ∸ 0
+  ≡⟨⟩
+    2
+  ∎ 
+```
+
+```agda
+_ : 3 ∸ 5 ≡ 0
+_ =
+  begin
+    3 ∸ 5 
+  ≡⟨⟩
+    2 ∸ 4
+  ≡⟨⟩
+    1 ∸ 3
+  ≡⟨⟩
+    0 ∸ 2
+  ≡⟨⟩
+    0
+  ∎
+```
 
 #### Exercise `Bin` (stretch) {#Bin}
 
