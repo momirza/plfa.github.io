@@ -42,7 +42,7 @@ open import plfa.part1.Relations using (_<_; z<s; s<s; zero; suc; even; odd)
 #### Exercise `seven` {#seven}
 
 Write out `7` in longhand.
-```
+
 
 #### Exercise `+-example` {#plus-example}
 
