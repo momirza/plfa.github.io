@@ -43,54 +43,16 @@ open import plfa.part1.Relations using (_<_; z<s; s<s; zero; suc; even; odd)
 
 Write out `7` in longhand.
 ```
-seven : ℕ
-seven = suc ( suc ( suc ( suc ( suc ( suc ( suc zero))))))
-```
 
 #### Exercise `+-example` {#plus-example}
 
 Compute `3 + 4`, writing out your reasoning as a chain of equations.
-```
-_ : 3 + 4 ≡ 7
-_ =
-  begin
-    3 + 4
-  ≡⟨⟩  -- inductive case
-    suc (2 + 4)
-  ≡⟨⟩  -- inductive case
-    suc (suc (1 + 4))
-  ≡⟨⟩  -- inductive case
-    suc (suc (suc (0 + 4)))
-  ≡⟨⟩
-    suc (suc (suc (4)))
-  ≡⟨⟩
-    7
-  ∎
-
-```
-
 
 
 #### Exercise `*-example` {#times-example}
 
 Compute `3 * 4`, writing out your reasoning as a chain of equations.
 
-```
-_ : 3 * 4 ≡ 12
-_ =
-  begin
-    3 * 4
-  ≡⟨⟩
-    4 + (2 * 4)
-  ≡⟨⟩
-    4 + (4 + (1 * 4))
-  ≡⟨⟩
-    4 + (4 + 4 + (0 * 4))
-  ≡⟨⟩
-    12
-  ∎
-    
-```
 
 #### Exercise `_^_` (recommended) {#power}
 
