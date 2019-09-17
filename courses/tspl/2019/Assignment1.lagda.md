@@ -178,8 +178,46 @@ number.  For example, since `1100` encodes twelve, we should have
 
     inc (x1 x1 x0 x1 nil) ≡ x0 x0 x1 x1 nil
 
+```agda
+inc_ : Bin → Bin
+inc nil    = x1 nil
+inc (x0 x) = x1 x
+inc (x1 x) = x0 inc (x)
+```
+
+
 Confirm that this gives the correct answer for the bitstrings
 encoding zero through four.
+
+```agda
+_ : inc (x1 x1 x0 x1 nil) ≡ x0 x0 x1 x1 nil
+_ = refl
+
+_ : inc nil ≡ x1 nil
+_ = refl
+
+_ : inc x0 nil ≡ x1 nil
+_ = refl
+
+_ : inc x1 nil ≡ x0 x1 nil
+_ = refl
+
+_ : inc x0 x1 nil ≡ x1 x1 nil
+_ = refl
+
+_ : inc x1 x1 nil ≡ x0 x0 x1 nil
+_ = begin
+      inc x1 x1 nil
+    ≡⟨⟩
+      x0 inc x1 nil
+    ≡⟨⟩
+      x0 x0 inc nil
+    ≡⟨⟩
+      x0 x0 x1 nil
+    ≡⟨⟩
+      x0 x0 x1 nil
+    ∎
+```
 
 Using the above, define a pair of functions to convert
 between the two representations.
@@ -190,6 +228,48 @@ between the two representations.
 For the former, choose the bitstring to have no leading zeros if it
 represents a positive natural, and represent zero by `x0 nil`.
 Confirm that these both give the correct answer for zero through four.
+
+```agda
+to : ℕ → Bin
+to zero = x0 nil
+to (suc n) = inc (to n) 
+
+
+from : Bin → ℕ
+from nil = zero
+from (x0 x) = 0 + 2 * (from x) 
+from (x1 x) = 1 + 2 * (from x)
+
+_ : to 0 ≡ x0 nil
+_ = refl
+
+_ : to 1 ≡ x1 nil
+_ = refl
+
+_ : to 2 ≡ x0 x1 nil
+_ = refl
+
+_ : to 3 ≡ x1 x1 nil
+_ = refl
+
+_ : to 4 ≡ x0 x0 x1 nil
+_ = refl
+
+_ : from (x0 x0 x1 nil) ≡ 4
+_ = refl
+
+_ : from (x1 x1 nil) ≡ 3
+_ = refl
+
+_ : from (x0 x1 nil) ≡ 2
+_ = refl
+
+_ : from (x1 nil)  ≡ 1
+_ = refl
+
+_ : from (x0 nil) ≡ 0
+_ = refl
+```
 
 ## Induction
 
