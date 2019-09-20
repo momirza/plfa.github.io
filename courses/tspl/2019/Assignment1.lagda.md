@@ -278,9 +278,12 @@ _ = refl
 Give another example of a pair of operators that have an identity
 and are associative, commutative, and distribute over one another.
 
+Answer: monus and times
+
 Give an example of an operator that has an identity and is
 associative but is not commutative.
 
+Answer: ­ 
 
 #### Exercise `finite-+-assoc` (stretch) {#finite-plus-assoc}
 
@@ -302,6 +305,19 @@ the following function from the standard library:
 
     sym : ∀ {m n : ℕ} → m ≡ n → n ≡ m
 
+```agda
++-swap : ∀ (m n p : ℕ) → m + (n + p) ≡ n + (m + p) 
++-swap m n p =
+  begin
+    m + (n + p)
+  ≡⟨ sym (+-assoc m n p) ⟩
+    (m + n) + p
+  ≡⟨ cong (_+ p) (+-comm m n) ⟩
+    (n + m) + p
+  ≡⟨ +-assoc n m p  ⟩
+    n + (m + p)
+  ∎
+```
 
 #### Exercise `*-distrib-+` (recommended) {#times-distrib-plus}
 
@@ -310,6 +326,17 @@ Show multiplication distributes over addition, that is,
     (m + n) * p ≡ m * p + n * p
 
 for all naturals `m`, `n`, and `p`.
+
+
+```agda
++-distrib : ∀ (m n p : ℕ) → (m + n) * p ≡ m * p + n * p
++-distrib m n p =
+  begin
+    (m + n) * p
+  ≡⟨ ? ⟩
+    m * p + n * p
+  ∎
+```
 
 #### Exercise `*-assoc` (recommended) {#times-assoc}
 
