@@ -330,11 +330,20 @@ for all naturals `m`, `n`, and `p`.
 
 ```agda
 +-distrib : ∀ (m n p : ℕ) → (m + n) * p ≡ m * p + n * p
-+-distrib m n p =
++-distrib zero n p = refl
++-distrib (suc m) n p =
   begin
-    (m + n) * p
-  ≡⟨ ? ⟩
-    m * p + n * p
+    ((suc m) + n) * p
+  ≡⟨⟩ 
+    suc (m + n) * p
+  ≡⟨⟩
+    p + ((m + n) * p)
+  ≡⟨ cong (p +_) (+-distrib m n p) ⟩
+    p + ( m * p + n * p)
+  ≡⟨ sym (+-assoc p (m * p) (n * p)) ⟩
+    p +  m * p + n * p
+  ≡⟨⟩
+    suc m * p + n * p
   ∎
 ```
 
