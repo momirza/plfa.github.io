@@ -329,16 +329,16 @@ for all naturals `m`, `n`, and `p`.
 
 
 ```agda
-+-distrib : ∀ (m n p : ℕ) → (m + n) * p ≡ m * p + n * p
-+-distrib zero n p = refl
-+-distrib (suc m) n p =
+*-distrib-+' : ∀ (m n p : ℕ) → (m + n) * p ≡ m * p + n * p
+*-distrib-+' zero n p = refl
+*-distrib-+' (suc m) n p =
   begin
     ((suc m) + n) * p
   ≡⟨⟩ 
     suc (m + n) * p
   ≡⟨⟩
     p + ((m + n) * p)
-  ≡⟨ cong (p +_) (+-distrib m n p) ⟩
+  ≡⟨ cong (p +_) (*-distrib-+' m n p) ⟩
     p + ( m * p + n * p)
   ≡⟨ sym (+-assoc p (m * p) (n * p)) ⟩
     p +  m * p + n * p
@@ -347,12 +347,13 @@ for all naturals `m`, `n`, and `p`.
   ∎
 ```
 
+With `rewrite`:
+
 ```agda
 *-distrib-+ : ∀ (m n p : ℕ) → (m + n) * p ≡ m * p + n * p
 *-distrib-+ zero n p = refl
 *-distrib-+ (suc m) n p rewrite *-distrib-+ m n p | +-assoc p (m * p) (n * p) = refl
 ```
-
 
 #### Exercise `*-assoc` (recommended) {#times-assoc}
 
@@ -361,6 +362,31 @@ Show multiplication is associative, that is,
     (m * n) * p ≡ m * (n * p)
 
 for all naturals `m`, `n`, and `p`.
+
+```agda
+*-assoc : ∀ (m n p : ℕ) → (m * n) * p ≡ m * (n * p)
+*-assoc zero n p = refl
+*-assoc (suc m) n p =
+  begin
+    ((suc m) * n) * p
+  ≡⟨⟩
+    (n + (m * n)) * p
+  ≡⟨ *-distrib-+ n (m * n) p ⟩
+    n * p + (m * n) * p
+  ≡⟨ cong ((n * p) +_) (*-assoc m n p)  ⟩
+    n * p + (m * (n * p))
+  ≡⟨⟩
+    (suc m) * (n * p)
+  ∎
+```
+
+With rewrite
+
+```agda
+*-assoc' : ∀ (m n p : ℕ) → (m * n) * p ≡ m * (n * p)
+*-assoc' zero n p = refl
+*-assoc' (suc m) n p rewrite *-distrib-+ n (m * n) p | *-assoc m n p = refl
+```
 
 #### Exercise `*-comm` (practice) {#times-comm}
 
