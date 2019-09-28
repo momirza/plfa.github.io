@@ -397,6 +397,52 @@ Show multiplication is commutative, that is,
 for all naturals `m` and `n`.  As with commutativity of addition,
 you will need to formulate and prove suitable lemmas.
 
+```agda
+*-zero : ∀ (m : ℕ) → zero * m ≡ m * zero
+*-zero zero = refl
+*-zero (suc m) =
+  begin
+    zero * m
+  ≡⟨⟩
+    zero
+  ≡⟨ cong (zero +_) (*-zero m) ⟩
+   zero + m * zero
+  ≡⟨⟩
+    suc m * zero
+  ∎
+
+*-suc : ∀ ( m n : ℕ) → m * (suc n) ≡ m + m * n
+*-suc zero n = refl
+*-suc (suc m) n rewrite *-suc m n | sym (+-assoc n m (m * n)) | +-comm n m | +-assoc m n (m * n) =  refl
+
+-- without rewrite
+
+*-suc' : ∀ ( m n : ℕ) → m * (suc n) ≡ m + m * n
+*-suc' zero n = refl
+*-suc' (suc m) n =
+  begin
+    suc m * (suc n)
+  ≡⟨⟩
+    suc n + (m * (suc n))
+  ≡⟨ cong (suc n +_) (*-suc' m n) ⟩
+    suc n + (m + m * n)
+  ≡⟨⟩ -- induction
+    suc (n + (m + m * n))
+  ≡⟨ cong (suc) (sym (+-assoc n m (m * n))) ⟩
+    suc (n + m + m * n)
+  ≡⟨ cong (λ x → suc (x + m * n)) (+-comm n m ) ⟩
+    suc (m + n + m * n)
+  ≡⟨ cong (suc) (+-assoc m n (m * n)) ⟩
+    suc (m + ( n  +  m * n))
+  ≡⟨⟩ -- ↑ induction using definitions of + and *
+    suc m + ((suc m) * n)
+  ∎
+
+*-comm : ∀ (m n : ℕ) → m * n ≡ n * m
+*-comm zero n  rewrite (sym (*-zero n)) = refl
+*-comm (suc m) n rewrite (sym (*-comm m n)) | *-suc n m | cong (n +_) (*-comm m n)  = refl
+```
+
 #### Exercise `0∸n≡0` (practice) {#zero-monus}
 
 Show
