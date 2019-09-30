@@ -451,6 +451,15 @@ Show
 
 for all naturals `n`. Did your proof require induction?
 
+```agda
+zero-monus : ∀ (n : ℕ) → zero ∸ n ≡ zero
+zero-monus zero = refl
+zero-monus (suc n) = refl
+```
+
+No, only the base cases were required.
+
+
 #### Exercise `∸-+-assoc` (practice) {#monus-plus-assoc}
 
 Show that monus associates with addition, that is,
@@ -458,6 +467,20 @@ Show that monus associates with addition, that is,
     m ∸ n ∸ p ≡ m ∸ (n + p)
 
 for all naturals `m`, `n`, and `p`.
+
+```agda
+monus-plus-assoc : ∀ (m n p : ℕ) → m ∸ n ∸ p ≡ m ∸ (n + p)
+monus-plus-assoc m zero p = refl
+monus-plus-assoc zero (suc n) p rewrite zero-monus p =  refl
+monus-plus-assoc (suc m) (suc n) p =
+  begin
+    m ∸ n ∸ p
+  ≡⟨  monus-plus-assoc m n p ⟩
+    m ∸ (n + p)
+  ≡⟨⟩
+    suc m ∸ suc (n + p)
+  ∎
+```
 
 #### Exercise `Bin-laws` (stretch) {#Bin-laws}
 
@@ -482,19 +505,31 @@ For each law: if it holds, prove; if not, give a counterexample.
 
 ## Relations
 
+```
+_ : 1 ≤ 4
+_ = s≤s z≤n
+```
+
 
 #### Exercise `orderings` (practice) {#orderings}
 
 Give an example of a preorder that is not a partial order.
 
+    _<_
+
 Give an example of a partial order that is not a preorder.
 
+    _==_
 
 #### Exercise `≤-antisym-cases` (practice) {#leq-antisym-cases}
 
 The above proof omits cases where one argument is `z≤n` and one
 argument is `s≤s`.  Why is it ok to omit them?
 
+
+These cases cannot arise since the first inequality implies that
+the middle value is zero which is already covered by the first
+case.
 
 #### Exercise `*-mono-≤` (stretch)
 
@@ -504,6 +539,16 @@ Show that multiplication is monotonic with regard to inequality.
 #### Exercise `<-trans` (recommended) {#less-trans}
 
 Show that strict inequality is transitive.
+
+```agda
+<-trans : ∀ {m n p : ℕ}
+  → m < n
+  → n < p
+    -----
+  → m < p
+<-trans z<s (s<s n<p) =  z<s
+<-trans (s<s m<n) (s<s n<p) = s<s (<-trans m<n n<p)
+```
 
 #### Exercise `trichotomy` (practice) {#trichotomy}
 
@@ -518,20 +563,96 @@ similar to that used for totality.
 (We will show that the three cases are exclusive after we introduce
 [negation][plfa.Negation].)
 
+```agda
+data Trichotomy (m n : ℕ) : Set where
+  forward :
+      m < n
+      -----
+   →  Trichotomy m n
+
+  flipped :
+      n < m
+      -----
+    → Trichotomy m n
+
+  equal :
+      m ≡ n 
+      -----
+    → Trichotomy m n
+
+<-trichotomy : ∀ (m n : ℕ) → Trichotomy m n
+<-trichotomy zero zero = equal refl
+<-trichotomy zero (suc n) = forward z<s
+<-trichotomy (suc m) zero = flipped z<s
+<-trichotomy (suc m) (suc n) with <-trichotomy m n
+...                             | forward m<n = forward (s<s m<n)
+...                             | flipped n<m = flipped (s<s n<m)
+...                             | equal refl  = equal refl
+```
+
 #### Exercise `+-mono-<` {#plus-mono-less}
 
 Show that addition is monotonic with respect to strict inequality.
 As with inequality, some additional definitions may be required.
 
+```
++-monoʳ-< : ∀ (n p q : ℕ)
+  → p < q
+    -------------
+  → n + p < n + q
++-monoʳ-< zero p q p<q = p<q
++-monoʳ-< (suc n) p q p<q = s<s (+-monoʳ-< n p q p<q)
+
++-monoˡ-< : ∀ (m n p : ℕ)
+  → m < n
+    -------------
+  → m + p < n + p
++-monoˡ-< m n p m<n rewrite +-comm m p | +-comm  n p = +-monoʳ-< p m n m<n
+
++-mono-< : ∀ (m n p q : ℕ)
+  → m < n
+  → p < q
+    -------------
+  → m + p < n + q
++-mono-< m n p q m<n p<q = <-trans (+-monoˡ-< m n p m<n) (+-monoʳ-< n p q p<q)
+```
+
 #### Exercise `≤-iff-<` (recommended) {#leq-iff-less}
 
 Show that `suc m ≤ n` implies `m < n`, and conversely.
+
+```agda
+≤-iff-< : ∀ (m n : ℕ)
+  → suc m ≤ n
+    ---------
+  → m < n
+≤-iff-< zero (suc n) (s≤s z≤n) = z<s
+≤-iff-< (suc m) (suc n) (s≤s m≤n) = s<s (≤-iff-< m n m≤n)
+
+<-iff-≤ : ∀ (m n : ℕ)
+  → m < n
+    ---------
+  → suc m ≤ n
+<-iff-≤ zero (suc n) (z<s)= s≤s z≤n
+<-iff-≤ (suc m) (suc n) (s<s m<n) = s≤s (<-iff-≤ m n m<n)
+```
 
 #### Exercise `<-trans-revisited` (practice) {#less-trans-revisited}
 
 Give an alternative proof that strict inequality is transitive,
 using the relating between strict inequality and inequality and
 the fact that inequality is transitive.
+
+```agda
+<-trans-revisited : ∀ { m n p : ℕ }
+  → m < n
+  → n < p
+    -----
+  → m < p
+<-trans-revisited z<n _ = {! z<n!}
+<-trans-revisited (s<s m<n) (s<s n<p) = {!!}
+```
+
 
 #### Exercise `o+o≡e` (stretch) {#odd-plus-odd}
 
