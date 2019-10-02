@@ -160,7 +160,7 @@ Chapter [Decidable]({{ site.baseurl }}/Decidable/).
 
 ## Inversion
 
-In our defintions, we go from smaller things to larger things.
+In our definitions, we go from smaller things to larger things.
 For instance, from `m ≤ n` we can conclude `suc m ≤ suc n`,
 where `suc m` is bigger than `m` (that is, the former contains
 the latter), and `suc n` is bigger than `n`. But sometimes we
@@ -178,7 +178,7 @@ inv-s≤s (s≤s m≤n) = m≤n
 Here `m≤n` (with no spaces) is a variable name while
 `m ≤ n` (with spaces) is a type, and the latter
 is the type of the former.  It is a common convention
-in Agda to choose derive a variable name by removing
+in Agda to derive a variable name by removing
 spaces from its type.
 
 Not every rule is invertible; indeed, the rule for `z≤n` has
