@@ -665,8 +665,14 @@ the fact that inequality is transitive.
   → n < p
     -----
   → m < p
-<-trans-revisited z<s (s<s n<p) =  z<s 
-<-trans-revisited (s<s m<n) (s<s n<p) = s<s (≤-iff-<  ({!!}))
+<-trans-revisited m<n (s<s n<p) = ≤-iff-< ((≤-trans (<-iff-≤ m<n) (<-iff-≤ (mylemma n<p))))
+  where
+    mylemma : ∀ { m n : ℕ }
+      → m < n
+        ---------
+      → m < suc n
+    mylemma z<s = z<s
+    mylemma (s<s m<n) = s<s (mylemma m<n)
 ```
 
 
