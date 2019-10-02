@@ -622,25 +622,25 @@ As with inequality, some additional definitions may be required.
 Show that `suc m ≤ n` implies `m < n`, and conversely.
 
 ```agda
-≤-iff-< : ∀ (m n : ℕ)
+≤-iff-< : ∀ {m n : ℕ}
   → suc m ≤ n
     ---------
   → m < n
-≤-iff-< zero (suc n) (s≤s z≤n) = z<s
-≤-iff-< (suc m) (suc n) (s≤s m≤n) = s<s (≤-iff-< m n m≤n)
+≤-iff-<  (s≤s z≤n) = z<s
+≤-iff-<  (s≤s (s≤s m≤n)) = s<s (≤-iff-< (s≤s m≤n))
 
-<-iff-≤ : ∀ (m n : ℕ)
+<-iff-≤ : ∀ {m n : ℕ}
   → m < n
     ---------
   → suc m ≤ n
-<-iff-≤ zero (suc n) (z<s)= s≤s z≤n
-<-iff-≤ (suc m) (suc n) (s<s m<n) = s≤s (<-iff-≤ m n m<n)
+<-iff-≤  z<s = s≤s z≤n
+<-iff-≤ (s<s m<n) = s≤s (<-iff-≤ m<n)
 ```
 
 #### Exercise `<-trans-revisited` (practice) {#less-trans-revisited}
 
 Give an alternative proof that strict inequality is transitive,
-using the relating between strict inequality and inequality and
+using the relationship between strict inequality and inequality and
 the fact that inequality is transitive.
 
 ```agda
@@ -649,8 +649,8 @@ the fact that inequality is transitive.
   → n < p
     -----
   → m < p
-<-trans-revisited z<n _ = {! z<n!}
-<-trans-revisited (s<s m<n) (s<s n<p) = {!!}
+<-trans-revisited z<s (s<s n<p) =  z<s 
+<-trans-revisited (s<s m<n) (s<s n<p) = s<s (≤-iff-<  ({!!}))
 ```
 
 
