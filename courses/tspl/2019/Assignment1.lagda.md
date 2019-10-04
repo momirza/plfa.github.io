@@ -8,7 +8,7 @@ permalink : /TSPL/2019/Assignment1/
 module Assignment1 where
 ```
 
-## YOUR NAME AND EMAIL GOES HERE
+## Mo Mirza <mohd.uraib@gmail.com>
 
 ## Introduction
 
