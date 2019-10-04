@@ -102,7 +102,11 @@ postulate
 ```
 
 ```
-
+≃-implies-≤ : ∀ {A B : Set}
+  → A ≃ B
+    -----
+  → A ≲ B
+≃-implies-≤ p = record { to = λ x → {!!} ; from = λ x → {!!} ; from∘to = λ x → {!!} }
 ```
 
 #### Exercise `_⇔_` (practice) {#iff}
