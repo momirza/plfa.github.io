@@ -8,7 +8,7 @@ permalink : /TSPL/2019/Assignment2/
 module Assignment2 where
 ```
 
-## YOUR NAME AND EMAIL GOES HERE
+## Mo Mirza <mohd.uraib@gmail.com>
 
 ## Introduction
 
@@ -102,11 +102,16 @@ postulate
 ```
 
 ```
+
 ≃-implies-≤ : ∀ {A B : Set}
   → A ≃ B
     -----
   → A ≲ B
-≃-implies-≤ p = record { to = λ x → {!!} ; from = λ x → {!!} ; from∘to = λ x → {!!} }
+≃-implies-≤ A≅B = record
+                  { to = to A≅B
+                  ; from = from A≅B
+                  ; from∘to = from∘to A≅B
+                  } where open _≃_
 ```
 
 #### Exercise `_⇔_` (practice) {#iff}
@@ -121,7 +126,27 @@ record _⇔_ (A B : Set) : Set where
 Show that equivalence is reflexive, symmetric, and transitive.
 
 ```
--- Your code goes here
+⇔-refl : ∀ { A : Set}
+    -----
+  → A ⇔ A
+⇔-refl = record { to = λ x → x ; from = λ x → x }
+
+⇔-sym : ∀ {A B : Set}
+  → A ⇔ B
+    -----
+  → B ⇔ A
+⇔-sym A⇔B = record { to = from A⇔B
+                   ; from = to A⇔B
+                   } where open _⇔_
+
+⇔-trans : ∀ {A B C : Set}
+  → A ⇔ B
+  → B ⇔ C
+    -----
+  → A ⇔ C
+⇔-trans A⇔B B⇔C = record { to = λ x → to B⇔C (to A⇔B x)  
+                         ; from = λ z → from A⇔B (from B⇔C z)
+                         } where open _⇔_
 ```
 
 #### Exercise `Bin-embedding` (stretch) {#Bin-embedding}
@@ -154,7 +179,12 @@ Show that `A ⇔ B` as defined [earlier]({{ site.baseurl }}/Isomorphism/#iff)
 is isomorphic to `(A → B) × (B → A)`.
 
 ```
--- Your code goes here
+⇔≃× : ∀ {A B : Set} → A ⇔ B ≃ (A → B) × (B → A)
+⇔≃× = record { to = λ x → ⟨ to x , from x ⟩
+             ; from = λ x → record { to = proj₁ x ; from = proj₂ x }
+             ; from∘to = λ x → refl
+             ; to∘from = λ y → refl
+             } where open _⇔_
 ```
 
 #### Exercise `⊎-comm` (recommended)

@@ -561,6 +561,15 @@ trans-≐ : ∀ {A : Set} {x y z : A}
 trans-≐ x≐y y≐z P Px  =  y≐z P (x≐y P Px)
 ```
 
+```
+trans-≐` : ∀ {A : Set} {x y z : A}
+  → x ≐ y
+  → y ≐ z
+    -----
+  → x ≐ z
+trans-≐` ×≐y y≐z P Px = y≐z P (×≐y P Px)
+```
+
 Symmetry is less obvious.  We have to show that if `P x` implies `P y`
 for all predicates `P`, then the implication holds the other way round
 as well:
