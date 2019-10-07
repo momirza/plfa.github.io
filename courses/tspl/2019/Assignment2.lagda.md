@@ -384,7 +384,7 @@ Show that `∀ (x : Tri) → B x` is isomorphic to `B aa × B bb × B cc`.
 ∀-× : ∀ {B : Tri → Set }
   → (∀ (x : Tri) → B x) ≃ B aa × B bb × B cc  
 ∀-× = record { to = λ x → ⟨ x aa ,  ⟨ x bb , x cc ⟩ ⟩
-             ; from = λ x Tri → {!!}
+             ; from = λ{ x aa → proj₁ x ; x bb → proj₁ (proj₂ x) ; x cc → proj₂ (proj₂ x)}
              ; from∘to = {!!}
              ; to∘from = {!!} }
 ```
