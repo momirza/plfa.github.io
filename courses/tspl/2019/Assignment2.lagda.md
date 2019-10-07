@@ -343,6 +343,14 @@ postulate
 Compare this with the result (`→-distrib-×`) in
 Chapter [Connectives]({{ site.baseurl }}/Connectives/).
 
+```
+∀-distrib-×` : ∀ {A : Set} {B C : A → Set} →
+  (∀ (x : A) → B x × C x) ≃ (∀ (x : A) → B x) × (∀ (x : A) → C x)
+∀-distrib-×` = record { to = λ x → ⟨  (λ y → proj₁ (x y)) , (λ y → proj₂ (x y)) ⟩
+                     ; from = λ x y → ⟨ (proj₁ x y) , (proj₂ x y) ⟩
+                     ; from∘to = λ x → refl
+                     ; to∘from = λ y → refl }   
+```
 
 #### Exercise `⊎∀-implies-∀⊎` (practice)
 
@@ -354,6 +362,12 @@ postulate
 ```
 Does the converse hold? If so, prove; if not, explain why.
 
+```
+⊎∀-implies-∀⊎` : ∀ {A : Set} { B C : A → Set } →
+  (∀ (x : A) → B x) ⊎ (∀ (x : A) → C x) → ∀ (x : A) → B x ⊎ C x
+⊎∀-implies-∀⊎` (inj₁ x) A = inj₁ (x A)
+⊎∀-implies-∀⊎` (inj₂ y) A = inj₂ (y A)
+```
 
 #### Exercise `∀-×` (practice)
 
@@ -366,6 +380,14 @@ data Tri : Set where
 ```
 Let `B` be a type indexed by `Tri`, that is `B : Tri → Set`.
 Show that `∀ (x : Tri) → B x` is isomorphic to `B aa × B bb × B cc`.
+```
+∀-× : ∀ {B : Tri → Set }
+  → (∀ (x : Tri) → B x) ≃ B aa × B bb × B cc  
+∀-× = record { to = λ x → ⟨ x aa ,  ⟨ x bb , x cc ⟩ ⟩
+             ; from = λ x Tri → {!!}
+             ; from∘to = {!!}
+             ; to∘from = {!!} }
+```
 
 
 #### Exercise `∃-distrib-⊎` (recommended)
