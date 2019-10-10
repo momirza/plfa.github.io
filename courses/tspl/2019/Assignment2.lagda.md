@@ -493,7 +493,22 @@ postulate
 ```
 
 ```
--- Your code goes here
+¬z<z : ¬ (zero < zero)
+¬z<z ()
+
+¬s<z : ∀ {m : ℕ} → ¬ (suc m < zero)
+¬s<z ()
+
+¬s<s : ∀ {m n : ℕ} → ¬ (m < n) →  ¬ (suc m < suc n)
+¬s<s ¬m<n (s<s m<n) = ¬m<n m<n
+
+_<?`_ : ∀ (m n : ℕ) → Dec (m < n)
+zero <?` zero = no ¬z<z
+zero <?` suc n = yes z<s
+suc m <?` zero = no ¬s<z
+suc m <?` suc n with m <?` n
+...                | yes m<n =  yes (s<s m<n)
+...                | no ¬m<n = no (¬s<s ¬m<n)
 ```
 
 #### Exercise `_≡ℕ?_` (practice)
@@ -505,7 +520,26 @@ postulate
 ```
 
 ```
--- Your code goes here
+¬z≡s : ∀ { n : ℕ } → ¬ (zero ≡ suc n)
+¬z≡s ()
+
+¬s≡z : ∀ { n : ℕ } → ¬ (suc n ≡ zero)
+¬s≡z ()
+
+
+suc≡-implies-≡ : ∀ { m n : ℕ } →  suc m ≡ suc n → m ≡ n
+suc≡-implies-≡ refl = refl 
+
+¬s≡s : ∀ { m n : ℕ } → ¬ (m ≡ n)  → ¬ (suc m ≡ suc n)
+¬s≡s ¬m≡n = λ x → ¬m≡n (suc≡-implies-≡ x)
+
+_≡ℕ?`_ : ∀ (m n : ℕ) → Dec (m ≡ n)
+zero ≡ℕ?` zero = yes refl
+zero ≡ℕ?` suc n = no ¬z≡s
+suc m ≡ℕ?` zero = no ¬s≡z
+suc m ≡ℕ?` suc n with m ≡ℕ?` n
+...                 | yes m≡n = yes (cong suc m≡n) 
+...                 | no ¬m≡n = no (¬s≡s ¬m≡n) 
 ```
 
 
