@@ -192,7 +192,12 @@ is isomorphic to `(A → B) × (B → A)`.
 Show sum is commutative up to isomorphism.
 
 ```
--- Your code goes here
+⊎-comm : ∀ {A B : Set } → A ⊎ B ≃ B ⊎ A
+⊎-comm = record { to = λ { (inj₁ x) → inj₂ x ; (inj₂ x) → inj₁ x}
+                ; from = λ { (inj₁ x) → inj₂ x ; (inj₂ x) → inj₁ x}
+                ; from∘to = λ { (inj₁ x) → refl ; (inj₂ y) → refl}
+                ; to∘from = λ { (inj₁ x) → refl ; (inj₂ y) → refl}
+                } where open Data.Sum
 ```
 
 #### Exercise `⊎-assoc` (practice)
@@ -200,7 +205,20 @@ Show sum is commutative up to isomorphism.
 Show sum is associative up to isomorphism.
 
 ```
--- Your code goes here
+⊎-assoc : ∀ {A B C : Set } → (A ⊎ B) ⊎ C ≃ A ⊎ (B ⊎ C)
+⊎-assoc = record { to = λ { (inj₁ (inj₁ x)) → inj₁ x
+                          ; (inj₁ (inj₂ x)) → inj₂ (inj₁ x)
+                          ; (inj₂ x) → inj₂ (inj₂ x) }
+                 ; from = λ { (inj₁ y) → inj₁ (inj₁ y)
+                            ; (inj₂ (inj₁ y)) → inj₁ (inj₂ y)
+                            ; (inj₂ (inj₂ y)) → inj₂ y }
+                 ; from∘to = λ { (inj₁ (inj₁ x)) → refl
+                               ; (inj₁ (inj₂ y)) → refl
+                               ; (inj₂ y) → refl }
+                 ; to∘from = λ { (inj₁ x) → refl
+                               ; (inj₂ (inj₁ x)) → refl
+                               ; (inj₂ (inj₂ y)) → refl }
+                 } where open Data.Sum
 ```
 
 #### Exercise `⊥-identityˡ` (recommended)
@@ -208,7 +226,11 @@ Show sum is associative up to isomorphism.
 Show empty is the left identity of sums up to isomorphism.
 
 ```
--- Your code goes here
+⊥-identityˡ : ∀ { A : Set } → ⊥ ⊎ A ≃ A
+⊥-identityˡ = record { to = λ { (inj₂ y) → y }
+                     ; from = λ x → inj₂ x
+                     ; from∘to = λ { (inj₂ y) → refl }
+                     ; to∘from = λ y → refl }
 ```
 
 #### Exercise `⊥-identityʳ` (practice)
@@ -216,7 +238,11 @@ Show empty is the left identity of sums up to isomorphism.
 Show empty is the right identity of sums up to isomorphism.
 
 ```
--- Your code goes here
+⊥-identityʳ : ∀ { A : Set } → A ⊎ ⊥ ≃ A
+⊥-identityʳ = record { to = λ { (inj₁ x) → x}
+                     ; from = λ x → inj₁ x
+                     ; from∘to = λ { (inj₁ x) → refl}
+                     ; to∘from = λ y → refl }
 ```
 
 #### Exercise `⊎-weak-×` (recommended)
@@ -230,8 +256,22 @@ This is called a _weak distributive law_. Give the corresponding
 distributive law, and explain how it relates to the weak version.
 
 ```
--- Your code goes here
+⊎-weak-×` : ∀ {A B C : Set} → (A ⊎ B) × C → A ⊎ (B × C)
+⊎-weak-×` ⟨ inj₁ x , y ⟩ = inj₁ x
+⊎-weak-×` ⟨ inj₂ y , z ⟩ = inj₂ ⟨ y , z ⟩
 ```
+
+The corresponding distributive law is 
+```
+postulate
+  ×-distrib-⊎ : ∀ {A B C : Set} → (A ⊎ B) × C ≃ (A × C) ⊎ (B × C)
+```
+
+which is defined in the book.
+
+⊎-weak-× is weak as it throws away information
+which is needed to reverse the implication.
+
 
 
 #### Exercise `⊎×-implies-×⊎` (practice)
@@ -244,8 +284,23 @@ postulate
 Does the converse hold? If so, prove; if not, give a counterexample.
 
 ```
--- Your code goes here
+⊎×-implies-×⊎` : ∀ {A B C D : Set} → (A × B) ⊎ (C × D) → (A ⊎ C) × (B ⊎ D)
+⊎×-implies-×⊎` (inj₁ ⟨ x , y ⟩) = ⟨ (inj₁ x) , inj₁ y ⟩
+⊎×-implies-×⊎` (inj₂ ⟨ m , n ⟩) = ⟨ (inj₂ m) , (inj₂ n) ⟩
 ```
+
+Does the converse hold?
+
+```
+×⊎-implies-×⊎ : ∀ {A B C D : Set} → (A ⊎ C) × (B ⊎ D) → (A × B) ⊎ (C × D) 
+×⊎-implies-×⊎ ⟨ inj₁ x , inj₁ y ⟩ = inj₁ ⟨ x , y ⟩
+×⊎-implies-×⊎ ⟨ inj₁ x , inj₂ y ⟩ =  {!!}
+×⊎-implies-×⊎ ⟨ inj₂ y , inj₁ x ⟩ = {!!}
+×⊎-implies-×⊎ ⟨ inj₂ y , inj₂ y₁ ⟩ = inj₂ ⟨ y , y₁ ⟩
+
+```
+
+No it doesn't as there is no way to go back.
 
 ## Negation
 
