@@ -311,7 +311,8 @@ Using negation, show that
 is irreflexive, that is, `n < n` holds for no `n`.
 
 ```
--- Your code goes here
+<-irreflexive : ∀ { n : ℕ } → ¬ (n < n)
+<-irreflexive (s<s n<n) = <-irreflexive n<n
 ```
 
 
@@ -332,6 +333,9 @@ but that when one holds the negation of the other two must also hold.
 -- Your code goes here
 ```
 
+-- TODO Find out how negation fits in
+
+
 #### Exercise `⊎-dual-×` (recommended)
 
 Show that conjunction, disjunction, and negation are related by a
@@ -342,7 +346,18 @@ version of De Morgan's Law.
 This result is an easy consequence of something we've proved previously.
 
 ```
--- Your code goes here
+open import Function using (_∘_)
+→-distrib-⊎ : ∀ {A B C : Set} → (A ⊎ B → C) ≃ ((A → C) × (B → C))
+→-distrib-⊎ =
+  record
+      { to      = λ{ f → ⟨ f ∘ inj₁ , f ∘ inj₂ ⟩ }
+      ; from    = λ{ ⟨ g , h ⟩ → λ{ (inj₁ x) → g x ; (inj₂ y) → h y } }
+      ; from∘to = λ{ f → extensionality λ{ (inj₁ x) → refl ; (inj₂ y) → refl } }
+      ; to∘from = λ{ ⟨ g , h ⟩ → refl }
+      }
+
+⊎-dual-× : ∀ { A B : Set } → ¬ (A ⊎ B) ≃ (¬ A) × (¬ B)
+⊎-dual-× =  →-distrib-⊎
 ```
 
 
@@ -352,6 +367,17 @@ Do we also have the following?
 
 If so, prove; if not, can you give a relation weaker than
 isomorphism that relates the two sides?
+
+```
+×-dual-⊎ : ∀ {A B : Set} → ¬ (A × B) ≲ ¬ ¬ (¬ A) ⊎ (¬ B)
+×-dual-⊎ = record { to = λ { x → inj₁ λ x₁ → {!!}}
+                  ; from = {!!}
+                  ; from∘to = {!!} }
+
+```
+
+TODO: Ask in tutorial ^
+
 
 #### Exercise `Classical` (stretch)
 
@@ -440,9 +466,11 @@ Show that `∀ (x : Tri) → B x` is isomorphic to `B aa × B bb × B cc`.
   → (∀ (x : Tri) → B x) ≃ B aa × B bb × B cc  
 ∀-× = record { to = λ x → ⟨ x aa ,  ⟨ x bb , x cc ⟩ ⟩
              ; from = λ{ x aa → proj₁ x ; x bb → proj₁ (proj₂ x) ; x cc → proj₂ (proj₂ x)}
-             ; from∘to = {!!}
-             ; to∘from = {!!} }
+             ; from∘to = λ { x → {!!}}
+             ; to∘from = λ {y → refl} }
 ```
+
+TODO: Think about this...
 
 
 #### Exercise `∃-distrib-⊎` (recommended)
@@ -452,6 +480,17 @@ Show that existentials distribute over disjunction:
 postulate
   ∃-distrib-⊎ : ∀ {A : Set} {B C : A → Set} →
     ∃[ x ] (B x ⊎ C x) ≃ (∃[ x ] B x) ⊎ (∃[ x ] C x)
+```
+
+```
+∃-distrib-⊎` : ∀ {A : Set} {B C : A → Set} →
+  ∃[ x ] (B x ⊎ C x ) ≃ (∃[ x ] B x) ⊎ (∃[ x ] C x)
+∃-distrib-⊎` = record { to = λ { ⟨ x , inj₁ y ⟩ → inj₁ ⟨ x , y ⟩
+                               ; ⟨ x , inj₂ y ⟩ → inj₂ ⟨ x , y ⟩ }
+                      ; from = λ { (inj₁ ⟨ x , y ⟩) → ⟨ x , inj₁ y ⟩
+                                 ; (inj₂ ⟨ x , y ⟩) → ⟨ x , inj₂ y ⟩}
+                      ; from∘to = λ { ⟨ x , inj₁ x₁ ⟩ → refl ; ⟨ x , inj₂ y ⟩ → refl}
+                      ; to∘from = λ { (inj₁ x) → refl ; (inj₂ y) → refl }} 
 ```
 
 
@@ -502,8 +541,24 @@ postulate
       --------------
     → ¬ (∀ x → B x)
 ```
+
+```
+∃¬-implies-¬∀` : ∀ {A : Set} {B : A → Set}
+  → ∃[ x ] (¬ B x)
+  → ¬ (∀ x → B x)
+∃¬-implies-¬∀` ⟨ x , ¬y ⟩ z = ¬y (z x)
+```
+
 Does the converse hold? If so, prove; if not, explain why.
 
+```
+¬∀-implies-∃¬ : ∀ {A : Set} {B : A → Set}
+  → ¬ (∀ x → B x)
+  → ∃[ x ] (¬ B x)
+¬∀-implies-∃¬ x = ⟨ {!!} , {!!} ⟩
+```
+
+--TODO find out whether this holds. Looks like it doesn't. Why?
 
 #### Exercise `Bin-isomorphism` (stretch) {#Bin-isomorphism}
 
