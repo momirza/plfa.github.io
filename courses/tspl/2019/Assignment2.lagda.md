@@ -369,12 +369,14 @@ If so, prove; if not, can you give a relation weaker than
 isomorphism that relates the two sides?
 
 ```
-×-dual-⊎ : ∀ {A B : Set} → ¬ (A × B) ≲ ¬ ¬ (¬ A) ⊎ (¬ B)
+×-dual-⊎ : ∀ {A B : Set} → ¬ (A × B) ≲ (¬ A) ⊎ (¬ B)
 ×-dual-⊎ = record { to = λ { x → inj₁ λ x₁ → {!!}}
-                  ; from = {!!}
+                  ; from = λ { (inj₁ x) → λ { ⟨ y , _ ⟩ → x y }; (inj₂ y) → λ { ⟨ _ , z ⟩ → y z}}
                   ; from∘to = {!!} }
 
 ```
+
+We do not know which of A or B hold. 
 
 TODO: Ask in tutorial ^
 
@@ -559,6 +561,7 @@ Does the converse hold? If so, prove; if not, explain why.
 ```
 
 --TODO find out whether this holds. Looks like it doesn't. Why?
+Can't say which `×`. 
 
 #### Exercise `Bin-isomorphism` (stretch) {#Bin-isomorphism}
 
@@ -676,6 +679,22 @@ postulate
 ```
 
 ```
--- Your code goes here
+_iff`_ : Bool → Bool → Bool
+false iff` false = true
+false iff` true = false
+true iff` false = false
+true iff` true = true
+
+_⇔-dec`_ : ∀ {A B : Set} → Dec A → Dec B → Dec (A ⇔ B)
+yes x ⇔-dec` yes y = yes (record { to = λ _ → y ; from = λ _ → x })
+yes x ⇔-dec` no ¬y = no λ z → ¬y (_⇔_.to z x)
+no ¬x ⇔-dec` yes y = no λ z → ¬x (_⇔_.from z y)
+no ¬x ⇔-dec` no ¬y = yes (record { to = λ x → ⊥-elim (¬x x) ; from = λ y → ⊥-elim (¬y y) })
+
+iff-⇔` : ∀ {A B : Set} (x : Dec A) (y : Dec B) → ⌊ x ⌋ iff` ⌊ y ⌋ ≡ ⌊ x ⇔-dec` y ⌋
+iff-⇔` (yes x) (yes y) = refl
+iff-⇔` (yes x) (no ¬y) = refl
+iff-⇔` (no ¬x) (yes y) = refl
+iff-⇔` (no ¬x) (no ¬y) = refl
 ```
 
