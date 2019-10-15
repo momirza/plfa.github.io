@@ -381,9 +381,6 @@ isomorphism that relates the two sides?
 
 We do not know which of A or B hold. 
 
-TODO: Ask in tutorial ^
-
-
 #### Exercise `Classical` (stretch)
 
 Consider the following principles:
@@ -563,8 +560,7 @@ Does the converse hold? If so, prove; if not, explain why.
 ¬∀-implies-∃¬ x = ⟨ {!!} , {!!} ⟩
 ```
 
---TODO find out whether this holds. Looks like it doesn't. Why?
-Can't say which `×`. 
+It doesn't because we can't which `×` holds. 
 
 #### Exercise `Bin-isomorphism` (stretch) {#Bin-isomorphism}
 
