@@ -294,16 +294,9 @@ Does the converse hold? If so, prove; if not, give a counterexample.
 
 Does the converse hold?
 
-```
-×⊎-implies-×⊎ : ∀ {A B C D : Set} → (A ⊎ C) × (B ⊎ D) → (A × B) ⊎ (C × D) 
-×⊎-implies-×⊎ ⟨ inj₁ x , inj₁ y ⟩ = inj₁ ⟨ x , y ⟩
-×⊎-implies-×⊎ ⟨ inj₁ x , inj₂ y ⟩ =  {!!}
-×⊎-implies-×⊎ ⟨ inj₂ y , inj₁ x ⟩ = {!!}
-×⊎-implies-×⊎ ⟨ inj₂ y , inj₂ y₁ ⟩ = inj₂ ⟨ y , y₁ ⟩
 
-```
-
-No it doesn't as there is no way to go back.
+No it doesn't as there is no way to go back as we do not have enough
+information to say which `Set` holds.
 
 ## Negation
 
@@ -379,7 +372,12 @@ isomorphism that relates the two sides?
 
 ```
 
-We do not know which of A or B hold. 
+We do not know which of A or B hold so we cannot go backwards.
+
+However, you can prove an embedding using the law of excluded middle
+as shown in the standard library:
+
+https://github.com/agda/agda-stdlib/blob/ad3cb8ea70ae3b1b3e7e0004d4568b0e648f75a8/src/Relation/Binary/Properties/HeytingAlgebra.agda#L164
 
 #### Exercise `Classical` (stretch)
 
@@ -491,8 +489,8 @@ postulate
                                ; ⟨ x , inj₂ y ⟩ → inj₂ ⟨ x , y ⟩ }
                       ; from = λ { (inj₁ ⟨ x , y ⟩) → ⟨ x , inj₁ y ⟩
                                  ; (inj₂ ⟨ x , y ⟩) → ⟨ x , inj₂ y ⟩}
-                      ; from∘to = λ { ⟨ x , inj₁ x₁ ⟩ → refl ; ⟨ x , inj₂ y ⟩ → refl}
-                      ; to∘from = λ { (inj₁ x) → refl ; (inj₂ y) → refl }} 
+                      ; from∘to = λ { ⟨ _ , inj₁ _ ⟩ → refl ; ⟨ _ , inj₂ _ ⟩ → refl}
+                      ; to∘from = λ { (inj₁ _) → refl ; (inj₂ _) → refl }} 
 ```
 
 
@@ -553,14 +551,7 @@ postulate
 
 Does the converse hold? If so, prove; if not, explain why.
 
-```
-¬∀-implies-∃¬ : ∀ {A : Set} {B : A → Set}
-  → ¬ (∀ x → B x)
-  → ∃[ x ] (¬ B x)
-¬∀-implies-∃¬ x = ⟨ {!!} , {!!} ⟩
-```
-
-It doesn't because we can't which `×` holds. 
+It doesn't because we don't have information to say whether `×` holds ∀. 
 
 #### Exercise `Bin-isomorphism` (stretch) {#Bin-isomorphism}
 
