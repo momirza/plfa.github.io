@@ -62,7 +62,7 @@ open import Relation.Nullary.Sum using (_⊎-dec_)
 open import Relation.Nullary.Negation using (contraposition)
 open import Data.Product using (Σ; _,_; ∃; Σ-syntax; ∃-syntax)
 open import plfa.part1.Relations using (_<_; z<s; s<s)
-open import plfa.part1.Isomorphism using (_≃_; ≃-sym; ≃-trans; _≲_; extensionality)
+open import plfa.part1.Isomorphism using (_≃_; ≃-sym; ≃-trans; _≲_; extensionality; ∀-extensionality)
 open plfa.part1.Isomorphism.≃-Reasoning
 ```
 
@@ -364,17 +364,9 @@ Do we also have the following?
 If so, prove; if not, can you give a relation weaker than
 isomorphism that relates the two sides?
 
-```
-×-dual-⊎ : ∀ {A B : Set} → ¬ (A × B) ≲ (¬ A) ⊎ (¬ B)
-×-dual-⊎ = record { to = λ { x → inj₁ λ x₁ → {!!}}
-                  ; from = λ { (inj₁ x) → λ { ⟨ y , _ ⟩ → x y }; (inj₂ y) → λ { ⟨ _ , z ⟩ → y z}}
-                  ; from∘to = {!!} }
-
-```
-
 We do not know which of A or B hold so we cannot go backwards.
 
-However, you can prove an embedding using the law of excluded middle
+However, one can prove an embedding using the law of excluded middle
 as shown in the standard library:
 
 https://github.com/agda/agda-stdlib/blob/ad3cb8ea70ae3b1b3e7e0004d4568b0e648f75a8/src/Relation/Binary/Properties/HeytingAlgebra.agda#L164
@@ -462,16 +454,18 @@ data Tri : Set where
 Let `B` be a type indexed by `Tri`, that is `B : Tri → Set`.
 Show that `∀ (x : Tri) → B x` is isomorphic to `B aa × B bb × B cc`.
 ```
+          
 ∀-× : ∀ {B : Tri → Set }
-  → (∀ (x : Tri) → B x) ≃ B aa × B bb × B cc  
+  → (∀ ( x : Tri) → B x ) ≃ B aa × B bb × B cc  
 ∀-× = record { to = λ x → ⟨ x aa ,  ⟨ x bb , x cc ⟩ ⟩
-             ; from = λ{ x aa → proj₁ x ; x bb → proj₁ (proj₂ x) ; x cc → proj₂ (proj₂ x)}
-             ; from∘to = λ { x → {!!}}
+             ; from = λ { x aa → proj₁ x
+                        ; x bb → proj₁ (proj₂ x)
+                        ; x cc → proj₂ (proj₂ x) }
+             ; from∘to = λ x → ∀-extensionality (λ { aa → refl
+                                                   ; bb → refl
+                                                   ; cc → refl})
              ; to∘from = λ {y → refl} }
 ```
-
-TODO: Think about this...
-
 
 #### Exercise `∃-distrib-⊎` (recommended)
 
