@@ -298,8 +298,16 @@ defined earlier.
 
 ```
 mul : Term
-mul = μ "*" ⇒ ƛ "m" ⇒ ƛ 
+mul = μ "*" ⇒
+        ƛ "m" ⇒
+        ƛ "n" ⇒
+          case ` "m"
+            [zero⇒ `zero
+            |suc "m" ⇒
+                 ( plfa.part2.Lambda.plus · ` "n" · (` "*" · ` "m" · ` "n") ) ]
+
 ```
+
 
 
 #### Exercise `mulᶜ` (practice)
