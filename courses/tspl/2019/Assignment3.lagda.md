@@ -8,7 +8,7 @@ permalink : /TSPL/2019/Assignment3/
 module Assignment3 where
 ```
 
-## YOUR NAME AND EMAIL GOES HERE
+## Mo Mirza <mohd.uraib@gmail.com>
 
 ## Introduction
 
@@ -41,7 +41,7 @@ yourself, or your group in the case of group practicals).
 
 ```
 import Relation.Binary.PropositionalEquality as Eq
-open Eq using (_≡_; refl; cong; sym)
+open Eq using (_≡_; refl; cong; sym; cong₂)
 open Eq.≡-Reasoning using (begin_; _≡⟨⟩_; _≡⟨_⟩_; _∎)
 open import Data.Bool.Base using (Bool; true; false; T; _∧_; _∨_; not)
 open import Data.Nat using (ℕ; zero; suc; _+_; _*_; _∸_; _≤_; s≤s; z≤n)
@@ -59,7 +59,7 @@ open import plfa.part1.Isomorphism using (_≃_; ≃-sym; ≃-trans; _≲_; exte
 open plfa.part1.Isomorphism.≃-Reasoning
 open import plfa.part1.Lists using (List; []; _∷_; [_]; [_,_]; [_,_,_]; [_,_,_,_];
   _++_; reverse; map; foldr; sum; All; Any; here; there; _∈_)
-open import plfa.part2.Lambda hiding (ƛ′_⇒_; case′_[zero⇒_|suc_⇒_]; μ′_⇒_; plus′; plus)
+open import plfa.part2.Lambda hiding (ƛ′_⇒_; case′_[zero⇒_|suc_⇒_]; μ′_⇒_; plus′; plus; begin_; _∎ )
 open import plfa.part2.Properties hiding (value?; unstuck; preserves; wttdgs)
 ```
 
@@ -73,6 +73,30 @@ reverse of the second appended to the reverse of the first:
 
     reverse (xs ++ ys) ≡ reverse ys ++ reverse xs
 
+```
+open import plfa.part1.Lists using (++-identityʳ; ++-assoc)
+reverse-++-distrib : ∀ {A : Set} (xs ys : List A)
+ → reverse (xs ++ ys) ≡ reverse ys ++ reverse xs
+reverse-++-distrib [] ys =
+  begin
+    reverse ([] ++ ys)
+  ≡⟨⟩
+    reverse ys
+  ≡⟨  sym  (++-identityʳ (reverse ys) ) ⟩ 
+    reverse ys ++ []
+  ∎
+reverse-++-distrib (x ∷ xs) ys =
+  begin
+    reverse (x ∷ xs ++ ys)
+  ≡⟨ cong ( _++ [ x ]) (reverse-++-distrib xs ys) ⟩
+    (reverse ys ++ reverse xs) ++ [ x ]
+  ≡⟨ ++-assoc (reverse ys) (reverse xs) [ x ] ⟩ 
+    reverse ys ++ (reverse xs ++ [ x ] )
+  ≡⟨⟩
+    reverse ys ++ reverse (x ∷ xs)
+  ∎ 
+```
+
 
 #### Exercise `reverse-involutive` (recommended)
 
@@ -80,6 +104,22 @@ A function is an _involution_ if when applied twice it acts
 as the identity function.  Show that reverse is an involution:
 
     reverse (reverse xs) ≡ xs
+
+```
+reverse-involutive : ∀ {A : Set} (xs : List A)
+  → reverse (reverse xs) ≡ xs
+reverse-involutive [] = refl
+reverse-involutive (x ∷ xs) =
+  begin
+    reverse (reverse (x ∷ xs))
+  ≡⟨⟩
+    reverse (reverse xs ++ [ x ])
+  ≡⟨ reverse-++-distrib (reverse xs) [ x ] ⟩
+    x ∷ reverse (reverse xs)
+  ≡⟨ cong (x ∷_) (reverse-involutive xs) ⟩
+    (x ∷ xs)
+  ∎
+```
 
 
 #### Exercise `map-compose` (practice)
@@ -121,7 +161,8 @@ For example:
     product [ 1 , 2 , 3 , 4 ] ≡ 24
 
 ```
--- Your code goes here
+product : (xs : List ℕ) → ℕ
+product xs = foldr _*_ 1 xs
 ```
 
 #### Exercise `foldr-++` (recommended)
@@ -133,6 +174,19 @@ postulate
     foldr _⊗_ e (xs ++ ys) ≡ foldr _⊗_ (foldr _⊗_ e ys) xs
 ```
 
+```
+foldr-++` : ∀ {A B : Set} (_⊗_ : A → B → B) (e : B) (xs ys : List A) →
+   foldr _⊗_ e (xs ++ ys) ≡ foldr _⊗_ (foldr _⊗_ e ys) xs
+foldr-++` _ _ [] ys = refl
+foldr-++` _⊗_ e (x ∷ xs) ys =
+  begin
+    foldr _⊗_ e ((x ∷ xs) ++ ys)
+  ≡⟨⟩
+   x ⊗ (foldr _⊗_ e (xs ++ ys)) 
+  ≡⟨ cong (x ⊗_) (foldr-++ _⊗_ e xs ys) ⟩
+    foldr _⊗_ (foldr _⊗_ e ys) (x ∷ xs)
+  ∎
+```
 
 #### Exercise `map-is-foldr` (practice)
 
@@ -143,6 +197,17 @@ postulate
     map f ≡ foldr (λ x xs → f x ∷ xs) []
 ```
 This requires extensionality.
+
+```
+map-is-foldr` : ∀ {A B : Set} {f : A → B}
+  → map f ≡ foldr (λ x xs → f x ∷ xs) []
+map-is-foldr` {f = f} =
+  begin
+    map f
+  ≡⟨ {!!}  ⟩
+    foldr (λ x xs → f x ∷ xs) []
+  ∎
+```
 
 #### Exercise `fold-Tree` (practice)
 
@@ -217,7 +282,24 @@ replacement for `_×_`.  As a consequence, demonstrate an equivalence relating
 `_∈_` and `_++_`.
 
 ```
--- Your code goes here
+open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import plfa.part1.Isomorphism using (_⇔_)
+Any-++-⇔ : ∀ {A : Set} {P : A → Set} (xs ys : List A) →
+  Any P (xs ++ ys) ⇔ (Any P xs ⊎ Any P ys)
+Any-++-⇔ xs ys = record { to = to xs ys
+                        ; from = from xs ys }
+         where
+         to : ∀ {A : Set} {P : A → Set} (xs ys : List A) →
+           Any P (xs ++ ys) → (Any P xs ⊎ Any P ys)
+         to [] ys Pys = inj₂ Pys
+         to (x ∷ xs) ys (here Px) = inj₁ (here Px)
+         to (x ∷ xs) ys (there Pxsys) = Data.Sum.map₁ there (to xs ys Pxsys) 
+         from : ∀ {A : Set} {P : A → Set} (xs ys : List A) →
+           Any P xs ⊎ Any P ys → Any P (xs ++ ys)
+         from [] ys = λ { (inj₂ y) → y}
+         from (x ∷ xs) ys = λ { (inj₁ (here Pxs)) → here Pxs
+                              ; (inj₁ (there Pxs)) → there (from xs ys (inj₁ Pxs))
+                              ; (inj₂ Pys) → there (from xs ys (inj₂ Pys)) }
 ```
 
 #### Exercise `All-++-≃` (stretch)
@@ -237,6 +319,37 @@ Show that `Any` and `All` satisfy a version of De Morgan's Law:
 (Can you see why it is important that here `_∘_` is generalised
 to arbitrary levels, as described in the section on
 [universe polymorphism]({{ site.baseurl }}/Equality/#unipoly)?)
+
+```
+¬Any≃All¬ : ∀ {A : Set} {P : A → Set} (xs : List A)
+  → (¬_ ∘ Any P) xs ≃ All (¬_ ∘ P) xs
+¬Any≃All¬ xs =
+  record { to = to xs
+         ; from = from 
+         ; from∘to = from∘to xs
+         ; to∘from = to∘from }
+  where
+  to : ∀ {A : Set} {P : A → Set} (xs : List A)
+    → (¬_ ∘ Any P) xs → All (¬_ ∘ P) xs
+  to [] ¬p = []
+  to (x ∷ xs) ¬p = (λ x → ¬p (here x)) ∷ to xs (λ z → ¬p (there z))
+
+  from : ∀ {A : Set} {P : A → Set} {xs : List A}
+    → All (¬_ ∘ P) xs → (¬_ ∘ Any P) xs
+  from (¬p ∷ ap) (here p) = ¬p p
+  from (¬p ∷ ap) (there p) = from ap p
+
+  to∘from : ∀ {A : Set} {P : A → Set} {xs : List A} (¬p : All (¬_ ∘ P) xs) → to xs (from ¬p) ≡ ¬p
+  to∘from [] = refl
+  to∘from (_ ∷ ¬ps) = cong₂ _∷_ refl (to∘from ¬ps)
+
+  from∘to : ∀ {A : Set} {P : A → Set} (xs : List A) → (¬p : ( ¬_ ∘ Any P) xs) → from (to xs ¬p) ≡ ¬p
+  from∘to [] ¬p = extensionality (λ ())
+  from∘to (_ ∷ xs) ¬ps = extensionality (λ
+             { (here _) → refl
+             ; (there p) → cong (λ ¬p → ¬p p) (from∘to xs ( ¬ps ∘ there )) })
+```
+🤯
 
 Do we also have the following?
 
@@ -305,7 +418,6 @@ mul = μ "*" ⇒
             [zero⇒ `zero
             |suc "m" ⇒
                  ( plfa.part2.Lambda.plus · ` "n" · (` "*" · ` "m" · ` "n") ) ]
-
 ```
 
 
@@ -318,7 +430,9 @@ definition may use `plusᶜ` as defined earlier (or may not
 — there are nice definitions both ways).
 
 ```
--- Your code goes here
+mulᶜ : Term
+mulᶜ = ƛ "m" ⇒ ƛ "n" ⇒ ƛ "s" ⇒ ƛ "z" ⇒
+       ` {!!}
 ```
 
 
@@ -371,6 +485,18 @@ plus′ = μ′ + ⇒ ƛ′ m ⇒ ƛ′ n ⇒
 ```
 Write out the definition of multiplication in the same style.
 
+```
+mul′ : Term
+mul′ = μ′ * ⇒ ƛ′ m ⇒ ƛ′ n ⇒
+          case′ m
+            [zero⇒ `zero
+            |suc m ⇒ (plus′ · n · (* · m · n) ) ]
+     where
+     * = ` "*"
+     m = ` "m"
+     n = ` "n"
+```
+
 
 #### Exercise `_[_:=_]′` (stretch)
 
@@ -391,7 +517,10 @@ Show that the first notion of reflexive and transitive closure
 above embeds into the second. Why are they not isomorphic?
 
 ```
--- Your code goes here
+-↠≲-↠′ : ∀ {M N : Term} → M —↠ N ≲ M —↠′ N
+-↠≲-↠′ = record { to = λ x → {!!}
+                ; from = λ x → {!!}
+                ; from∘to = {!!} }
 ```
 
 #### Exercise `plus-example` (practice)
@@ -415,7 +544,8 @@ to the list
     [ ⟨ "z" , `ℕ ⟩ , ⟨ "s" , `ℕ ⇒ `ℕ ⟩ ]
 
 ```
--- Your code goes here
+--  context-≃ : ∀ 
+
 ```
 
 #### Exercise `mul-type` (recommended)
@@ -424,7 +554,14 @@ Using the term `mul` you defined earlier, write out the derivation
 showing that it is well typed.
 
 ```
--- Your code goes here
+⊢mul : ∀ {Γ} → Γ ⊢ mul ⦂ `ℕ ⇒ `ℕ ⇒ `ℕ
+⊢mul =  ⊢μ (⊢ƛ (⊢ƛ  (⊢case (⊢` ∋m) ⊢zero
+                                   ((⊢plus · ⊢` ∋n) · ((⊢` ∋*) · ⊢` ∋m′ · ⊢` ∋n))))) 
+  where
+  ∋m  = S (λ()) Z
+  ∋n  = S (λ()) Z
+  ∋*  = S (λ()) (S (λ()) (S (λ()) Z))
+  ∋m′ = Z
 ```
 
 
@@ -483,9 +620,12 @@ preserves types.
 #### Exercise `mul-eval` (recommended)
 
 Using the evaluator, confirm that two times two is four.
-
+-- https://www.emacswiki.org/emacs/RectangleCommands
+-- Look at ‘C-x r o’
+-- Run `eval (gas 100) (⊢mul · ⊢two · ⊢two)`
+-- paste and format output.
 ```
--- Your code goes here
+
 ```
 
 
