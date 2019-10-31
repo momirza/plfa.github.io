@@ -198,16 +198,6 @@ postulate
 ```
 This requires extensionality.
 
-```
-map-is-foldr` : ∀ {A B : Set} {f : A → B}
-  → map f ≡ foldr (λ x xs → f x ∷ xs) []
-map-is-foldr` {f = f} =
-  begin
-    map f
-  ≡⟨ {!!}  ⟩
-    foldr (λ x xs → f x ∷ xs) []
-  ∎
-```
 
 #### Exercise `fold-Tree` (practice)
 
@@ -357,6 +347,9 @@ Do we also have the following?
 
 If so, prove; if not, explain why.
 
+No, because we only have a one way relationship. We can't say
+from Any whether all P hold. 
+
 
 #### Exercise `All-∀` (practice)
 
@@ -429,11 +422,6 @@ two natural numbers represented as Church numerals. Your
 definition may use `plusᶜ` as defined earlier (or may not
 — there are nice definitions both ways).
 
-```
-mulᶜ : Term
-mulᶜ = ƛ "m" ⇒ ƛ "n" ⇒ ƛ "s" ⇒ ƛ "z" ⇒
-       ` {!!}
-```
 
 
 #### Exercise `primed` (stretch) {#primed}
@@ -516,12 +504,6 @@ substitution.
 Show that the first notion of reflexive and transitive closure
 above embeds into the second. Why are they not isomorphic?
 
-```
--↠≲-↠′ : ∀ {M N : Term} → M —↠ N ≲ M —↠′ N
--↠≲-↠′ = record { to = λ x → {!!}
-                ; from = λ x → {!!}
-                ; from∘to = {!!} }
-```
 
 #### Exercise `plus-example` (practice)
 
@@ -620,10 +602,7 @@ preserves types.
 #### Exercise `mul-eval` (recommended)
 
 Using the evaluator, confirm that two times two is four.
--- https://www.emacswiki.org/emacs/RectangleCommands
--- Look at ‘C-x r o’
--- Run `eval (gas 100) (⊢mul · ⊢two · ⊢two)`
--- paste and format output.
+
 ```
 _ : eval (gas 100) (⊢mul · ⊢two · ⊢two) ≡
   steps
