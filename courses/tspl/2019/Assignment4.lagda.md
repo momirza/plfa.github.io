@@ -8,8 +8,7 @@ permalink : /TSPL/2019/Assignment4/
 module Assignment4 where
 ```
 
-## YOUR NAME AND EMAIL GOES HERE
-
+## Mo Mirza <mohd.uraib@gmail.com>
 
 ## Introduction
 
@@ -63,6 +62,9 @@ open import Relation.Nullary using (¬_; Dec; yes; no)
 
 ## DeBruijn
 
+```
+import plfa.part2.DeBruijn as plfaDB
+```
 
 ```
 module DeBruijn where
@@ -81,6 +83,15 @@ Write out the definition of a lambda term that multiplies
 two natural numbers, now adapted to the inherently typed
 DeBruijn representation.
 
+```
+  mul : ∀ {Γ} → Γ ⊢ `ℕ ⇒ `ℕ ⇒ `ℕ
+  mul = μ ƛ ƛ (case (# 1) (`zero)
+                          (( plus · # 1 ) · ( # 3 · # 0 · # 1)))
+
+  2*2 : ∀ {Γ} → Γ ⊢ `ℕ
+  2*2 = mul · two · two
+
+```
 
 #### Exercise `V¬—→`
 
