@@ -268,6 +268,19 @@ Remember to indent all code by two spaces.
         --------------
       → Γ ⊢ C
 
+
+    -- begin
+    -- sum
+    `inj₁ : ∀ {Γ A B}
+        → Γ ⊢ A
+        ------------
+        → Γ ⊢ A `⊎ B
+
+    `inj₂ : ∀ {Γ A B}
+        → Γ ⊢ B
+        -----------
+        → Γ ⊢ A `⊎ B
+     -- end
 ```
 
 ### Abbreviating de Bruijn indices
@@ -311,6 +324,8 @@ Remember to indent all code by two spaces.
   rename ρ (`proj₁ L)     =  `proj₁ (rename ρ L)
   rename ρ (`proj₂ L)     =  `proj₂ (rename ρ L)
   rename ρ (case× L M)    =  case× (rename ρ L) (rename (ext (ext ρ)) M)
+  rename p (`inj₁ L)      = `inj₁ (rename p L)
+  rename p (`inj₂ M)      = `inj₂ (rename p M)
 ```
 
 ## Simultaneous Substitution
@@ -335,6 +350,8 @@ Remember to indent all code by two spaces.
   subst σ (`proj₁ L)     =  `proj₁ (subst σ L)
   subst σ (`proj₂ L)     =  `proj₂ (subst σ L)
   subst σ (case× L M)    =  case× (subst σ L) (subst (exts (exts σ)) M)
+  subst σ (`inj₁ x)      = `inj₁ (subst σ x)
+  subst σ (`inj₂ x)      = `inj₂ (subst σ x)
 ```
 
 ## Single and double substitution
@@ -400,6 +417,14 @@ Remember to indent all code by two spaces.
       → Value W
         ----------------
       → Value ⟨ V , W ⟩
+
+    -- begin
+    V-inj₁ : ∀ {Γ A B } {V : Γ ⊢ A} {W : Γ ⊢ B}
+      → Value V
+        -------
+      → Value  ( V `⊎ W )
+
+    
 ```
 
 Implicit arguments need to be supplied when they are
@@ -533,6 +558,17 @@ not fixed by the given arguments.
       → Value W
         ----------------------------------
       → case× ⟨ V , W ⟩ M —→ M [ V ][ W ]
+
+    ξ-inj₁ : ∀ {Γ A B} {L L′ : Γ ⊢ A `⊎ B}
+      → L —→ L′
+      ---------------------
+      → `inj₁ L —→ `inj₂ L′
+
+    ξ-inj₂ : ∀ {Γ A B} {L L′ : Γ ⊢ A `⊎ B}
+      → L —→ L′
+      ---------------------
+      → `inj₂ L —→ `inj₂ L′
+   
 ```
 
 ## Reflexive and transitive closure
@@ -637,6 +673,10 @@ not fixed by the given arguments.
   progress (case× L M) with progress L
   ...    | step L—→L′                         =  step (ξ-case× L—→L′)
   ...    | done (V-⟨ VM , VN ⟩)               =  step (β-case× VM VN)
+  progress (`inj₁ L) with progress L
+  ...    | step L-→L‵                         = step {!!}
+  ...    | done (x)                           = {!!}
+  progress (`inj₂ L)                          = {!!}  
 ```
 
 
