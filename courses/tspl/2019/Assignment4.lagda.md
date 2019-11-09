@@ -280,6 +280,14 @@ Remember to indent all code by two spaces.
         → Γ ⊢ B
         -----------
         → Γ ⊢ A `⊎ B
+
+    case⊎ : ∀ {Γ A B C}
+        → Γ ⊢ A `⊎ B
+        → Γ , A ⊢ C
+        → Γ , B ⊢ C
+        -----------
+        → Γ ⊢ C
+
      -- end
 ```
 
@@ -324,8 +332,11 @@ Remember to indent all code by two spaces.
   rename ρ (`proj₁ L)     =  `proj₁ (rename ρ L)
   rename ρ (`proj₂ L)     =  `proj₂ (rename ρ L)
   rename ρ (case× L M)    =  case× (rename ρ L) (rename (ext (ext ρ)) M)
-  rename p (`inj₁ L)      = `inj₁ (rename p L)
-  rename p (`inj₂ M)      = `inj₂ (rename p M)
+  -- begin
+  rename ρ (`inj₁ L)      = `inj₁ (rename ρ L)
+  rename ρ (`inj₂ M)      = `inj₂ (rename ρ M)
+  rename ρ (case⊎ L M N)  = case⊎ (rename ρ L) (rename (ext ρ) M) (rename (ext ρ) N)
+  -- end
 ```
 
 ## Simultaneous Substitution
@@ -352,6 +363,7 @@ Remember to indent all code by two spaces.
   subst σ (case× L M)    =  case× (subst σ L) (subst (exts (exts σ)) M)
   subst σ (`inj₁ x)      = `inj₁ (subst σ x)
   subst σ (`inj₂ x)      = `inj₂ (subst σ x)
+  subst σ (case⊎ L M N)  = case⊎ (subst σ L) (subst (exts σ) M) (subst (exts σ) N)
 ```
 
 ## Single and double substitution
@@ -419,12 +431,17 @@ Remember to indent all code by two spaces.
       → Value ⟨ V , W ⟩
 
     -- begin
-    V-inj₁ : ∀ {Γ A B } {V : Γ ⊢ A} {W : Γ ⊢ B}
+    V-inj₁ : ∀ {Γ A B } {V : Γ ⊢ A}
       → Value V
         -------
-      → Value  ( V `⊎ W )
+      → Value {A = A `⊎ B}  ( `inj₁ V )
 
-    
+    V-inj₂ : ∀ {Γ A B } {V : Γ ⊢ B}
+      → Value V
+        -------
+      → Value {A = A `⊎ B}  ( `inj₂ V )
+    -- end
+
 ```
 
 Implicit arguments need to be supplied when they are
@@ -559,16 +576,35 @@ not fixed by the given arguments.
         ----------------------------------
       → case× ⟨ V , W ⟩ M —→ M [ V ][ W ]
 
-    ξ-inj₁ : ∀ {Γ A B} {L L′ : Γ ⊢ A `⊎ B}
+    --begin
+    
+    ξ-inj₁ : ∀ {Γ A B} {L L′ : Γ ⊢ A}
       → L —→ L′
       ---------------------
-      → `inj₁ L —→ `inj₂ L′
+      → `inj₁ { B = A `⊎ B } L —→ `inj₁ L′
 
-    ξ-inj₂ : ∀ {Γ A B} {L L′ : Γ ⊢ A `⊎ B}
+    ξ-inj₂ : ∀ {Γ A B} {L L′ : Γ ⊢ B}
       → L —→ L′
       ---------------------
-      → `inj₂ L —→ `inj₂ L′
-   
+      → `inj₂ { A = A `⊎ B } L —→ `inj₂ L′
+
+    ξ-case⊎ : ∀ {Γ A B C } {L L′ : Γ ⊢ A `⊎ B} {M : Γ , A ⊢ C} {N : Γ , B ⊢ C}
+      → L —→ L′
+      --------
+      → case⊎ L M N —→ case⊎ L′ M N
+
+
+    β-inj₁ : ∀ {Γ A B C} {V : Γ ⊢ A} {M : Γ , A ⊢ C} {N : Γ , B ⊢ C}
+      → Value V
+      ---------
+      → case⊎ (`inj₁ V) M N —→ M [ V ]
+
+    β-inj₂ : ∀ {Γ A B C} {W : Γ ⊢ B} {M : Γ , A ⊢ C} {N : Γ , B ⊢ C}
+      → Value W
+      ---------
+      → case⊎ (`inj₂ W) M N —→ N [ W ]
+    
+    --end 
 ```
 
 ## Reflexive and transitive closure
@@ -612,6 +648,8 @@ not fixed by the given arguments.
   V¬—→ V-con        ()
   V¬—→ V-⟨ VM , _ ⟩ (ξ-⟨,⟩₁ M—→M′)    =  V¬—→ VM M—→M′
   V¬—→ V-⟨ _ , VN ⟩ (ξ-⟨,⟩₂ _ N—→N′)  =  V¬—→ VN N—→N′
+  V¬—→ (V-inj₁ VM) (ξ-inj₁ M—→M′) = V¬—→ VM M—→M′
+  V¬—→ (V-inj₂ VN) (ξ-inj₂ N—→N′) = V¬—→ VN N—→N′
 ```
 
 
@@ -673,10 +711,18 @@ not fixed by the given arguments.
   progress (case× L M) with progress L
   ...    | step L—→L′                         =  step (ξ-case× L—→L′)
   ...    | done (V-⟨ VM , VN ⟩)               =  step (β-case× VM VN)
+  -- begin
   progress (`inj₁ L) with progress L
-  ...    | step L-→L‵                         = step {!!}
-  ...    | done (x)                           = {!!}
-  progress (`inj₂ L)                          = {!!}  
+  ...    | step L-→L‵                         = step (ξ-inj₁ L-→L‵)
+  ...    | done (x)                           = done (V-inj₁ x)
+  progress (`inj₂ L) with progress L
+  ...    | step L-→L‵                         = step (ξ-inj₂ L-→L‵)
+  ...    | done (x)                           = done (V-inj₂ x)  
+  progress (case⊎ L M N)  with progress L
+  ...    | step L-→L‵                         = step (ξ-case⊎ L-→L‵)
+  ...    | done (V-inj₁ x)                    = step (β-inj₁ x)
+  ...    | done (V-inj₂ x)                    = step (β-inj₂ x)
+  -- end
 ```
 
 
