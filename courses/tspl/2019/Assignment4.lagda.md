@@ -1213,6 +1213,14 @@ Remember to indent all code by two spaces.
 Rewrite your definition of multiplication from
 Chapter [Lambda][plfa.Lambda], decorated to support inference.
 
+```
+  mul : Term⁺
+  mul = (μ "*" ⇒ ƛ "m" ⇒ ƛ "n" ⇒
+            case (` "m") [zero⇒ zero
+                         |suc "m" ⇒ ( plus · (` "n" ↑) · (` "*" · (` "m" ↑) · (` "n" ↑) ↑) ↑)  ])
+              ↓ (`ℕ ⇒ `ℕ ⇒ `ℕ)
+
+```
 
 #### Exercise `bidirectional-products` (recommended) {#bidirectional-products}
 
