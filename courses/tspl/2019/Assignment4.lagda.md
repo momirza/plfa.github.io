@@ -613,7 +613,7 @@ not fixed by the given arguments.
     ξ-case⊥ : ∀ {Γ A} {L L′ : Γ ⊢ `⊥}  
       → L —→ L′
       ---------
-      → case⊥ {A = A} L  —→ case⊥ L
+      → case⊥ {A = A} L  —→ case⊥ L′
     --end 
 ```
 
